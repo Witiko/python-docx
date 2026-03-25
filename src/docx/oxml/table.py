@@ -87,7 +87,7 @@ class CT_Row(BaseOxmlElement):
             raise ValueError(f"no `tc` element at grid_offset={grid_offset}")
 
         cell_dict = dict()
-        cell_index = 0
+        cell_index = self.grid_before
         for tc in self.tc_lst:
             for _ in range(tc.grid_span):
                 cell_dict[cell_index] = tc
