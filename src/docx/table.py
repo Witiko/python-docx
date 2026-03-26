@@ -420,9 +420,16 @@ class _Row(Parented):
             # -- is guaranteed to be the same width (gridSpan). So we can delegate content
             # -- discovery to that prior-row `w:tc` element (recursively) until we arrive at the
             # -- "root" cell -- for the vertical span.
-            if tc.vMerge == "continue":
-                yield from iter_tc_cells(tc._tc_above)  # pyright: ignore[reportPrivateUsage]
-                return
+            try:
+                if tc.vMerge == "continue":
+                    yield from iter_tc_cells(tc._tc_above)  # pyright: ignore[reportPrivateUsage]
+                    return
+            except ValueError as e:
+                if str(e) == 'no tr above topmost tr in w:tbl' or str(e).startswith('no `tc` element at grid_offset='):
+                    # Ignore misaligned vertical spans.
+                    pass
+                else:
+                    raise
 
             # -- Otherwise, vMerge is either "restart" or None, meaning this `tc` holds the actual
             # -- content of the cell (whether it is vertically merged or not).
